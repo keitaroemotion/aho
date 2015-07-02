@@ -67,13 +67,13 @@ def operate(operation)
     when "tl"
       list_tags
     when "web", "w" #webfind
-      exe_web
+      exe_web args
     when "clean" #clean trash
       system("rm -rf ~/.Trash/*")
     when "renamefiles"
       exe_rename
     when "memo"
-      exe_memo
+      exe_memo args
     when "wiki", "wi" # dictionary refer, insert, modify
       exe_wiki args
     when "del"

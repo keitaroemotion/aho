@@ -8,11 +8,17 @@ def makecash(url)
   f.close
 end
 
-def exe_web()
-  def search()
+def exe_web(args=nil)
+  def search(args)
     url = "https://www.google.co.jp/search?q="
-    get_args("Enter search words:").each do |word|
-      url += "#{word}+"
+    if args.size == 0
+      get_args("Enter search words:").each do |word|
+        url += "#{word}+"
+      end
+    else
+      args[1..args.size-1].each do |word|
+        url += "#{word}+"
+      end
     end
     url = url[0 .. url.size-2]
     system "open #{url}"
@@ -20,12 +26,19 @@ def exe_web()
   end
 
 
-  def exe()
-    print "[Enter:]search [b:]back [q:]quit ?: "
-    case $stdin.gets.chomp
+  def exe(args=nil)
+    op = ""
+    if args == nil
+      print "[Enter:]search [b:]back [q:]quit ?: "
+      op = $stdin.gets.chomp
+    else
+    end
+    case op
     when ""
-      search
-      exe
+      search args
+      if args == nil
+        exe
+      end
     when "b"
       cashlist = file_to_array($target_webcash)
       print "Enter index: "
@@ -45,6 +58,6 @@ def exe_web()
       exe
     end
   end
-  exe
+  exe args
 end
 
