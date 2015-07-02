@@ -57,16 +57,72 @@ def getDateString()
   return  "#{year},#{month},#{day}"
 end
 
-def task()
-  def format(str)
-    str = str.to_s
-    if str.size == 1
-      return "0#{str}"
-    else
-      return str
+def format(str)
+  str = str.to_s
+  if str.size == 1
+    return "0#{str}"
+  else
+    return str
+  end
+end
+
+def get_date(ls)
+  year  =  ls[1].chomp
+  month =  ls[2].chomp
+  day   =  ls[3].chomp
+  Time.new year, month, day
+end
+
+def left_older(old, new) #
+  yd = new.year - old.year
+  if yd > 0
+    return 0 # true
+  elsif yd < 0
+    return 1 # false
+  else
+    # could be equal : -1
+  end
+  md = new.month - old.month
+  if md > 0
+    return 0 # true
+  elsif md < 0
+    return 1 # false
+  else
+    # could be equal : -1
+  end
+  dd = new.day - old.day
+  if dd > 0
+    return 0
+  elsif dd < 0
+    return 1
+  else
+    return -1
+  end
+end
+
+
+def this_task()
+  file_to_array($target_todo).each do |line|
+    ls = line.split(',')
+    haec_time = get_date(ls)
+    compared_res = left_older(haec_time, Time.now)
+    (1..ls.size-1).each do |i|
+      if compared_res == 0
+        print "#{format(ls[i].chomp).cyan} "
+      elsif compared_res == 1
+      else
+        print "#{format(ls[i].chomp).red} "
+      end
+    end
+    if compared_res != 1
+      print ls[0]
+      puts
     end
   end
+end
 
+
+def task()
 
   t = Time.now
   date = "#{t.year},#{t.month},#{t.day}"
@@ -75,42 +131,8 @@ def task()
 
   File.open($target_todo, "r").each do |line|
 
-    def get_date(ls)
-      year  =  ls[1].chomp
-      month =  ls[2].chomp
-      day   =  ls[3].chomp
-      Time.new year, month, day
-    end
-
     ls = line.split(',')
     haec_time = get_date(ls)
-
-    def left_older(old, new) #
-      yd = new.year - old.year
-      if yd > 0
-        return 0 # true
-      elsif yd < 0
-        return 1 # false
-      else
-        # could be equal : -1
-      end
-      md = new.month - old.month
-      if md > 0
-        return 0 # true
-      elsif md < 0
-        return 1 # false
-      else
-        # could be equal : -1
-      end
-      dd = new.day - old.day
-      if dd > 0
-        return 0
-      elsif dd < 0
-        return 1
-      else
-        return -1
-      end
-    end
 
     (1..ls.size-1).each do |i|
       compared_res = left_older(haec_time, today_date)

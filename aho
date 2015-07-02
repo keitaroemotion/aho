@@ -23,7 +23,9 @@ require 'colorize'
 operation = ARGV[0]
 current_location = ""
 
+
 def operate(operation)
+  this_task
   begin
     if operation != nil
       args = operation.split(' ')
