@@ -1,19 +1,19 @@
 #!/usr/bin/env ruby
 
-require '/usr/local/etc/appu/lib/helper'
-require '/usr/local/etc/appu/lib/link'
-require '/usr/local/etc/appu/lib/open'
-require '/usr/local/etc/appu/lib/todo'
-require '/usr/local/etc/appu/lib/search'
-require '/usr/local/etc/appu/lib/web'
-require '/usr/local/etc/appu/lib/process'
-require '/usr/local/etc/appu/lib/filex'
-require '/usr/local/etc/appu/lib/alias'
-require '/usr/local/etc/appu/lib/memo'
-require '/usr/local/etc/appu/lib/ca'
-require '/usr/local/etc/appu/lib/book'
-require '/usr/local/etc/appu/lib/err'
-require '/usr/local/etc/appu/lib/wiki'
+require '/usr/local/etc/aho/lib/helper'
+require '/usr/local/etc/aho/lib/link'
+require '/usr/local/etc/aho/lib/open'
+require '/usr/local/etc/aho/lib/todo'
+require '/usr/local/etc/aho/lib/search'
+require '/usr/local/etc/aho/lib/web'
+require '/usr/local/etc/aho/lib/process'
+require '/usr/local/etc/aho/lib/filex'
+require '/usr/local/etc/aho/lib/alias'
+require '/usr/local/etc/aho/lib/memo'
+require '/usr/local/etc/aho/lib/ca'
+require '/usr/local/etc/aho/lib/book'
+require '/usr/local/etc/aho/lib/err'
+require '/usr/local/etc/aho/lib/wiki'
 require 'fileutils'
 require 'colorize'
 
@@ -80,7 +80,7 @@ def operate(operation)
       exe_kill
     when "reload", "rel"#only for developer
       system "sh #{Dir.pwd}/setup"
-      Kernel.exec "appu" # reload the program
+      Kernel.exec "aho" # reload the program
     when "//"
       exe_search
     else
