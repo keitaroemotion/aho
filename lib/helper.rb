@@ -159,6 +159,9 @@ def help()
   end
   puts_c "kill or k      ", " ... kill the application starts with the kw"
   puts_c "web  or w      ", " ... search with browser "
+  puts_c "wi [la]            ", " ... list all words in wiki  "
+  puts_c "wi [e] [new word]           ", " ...  edit wiki  "
+  puts_c "wi [word]           ", " ...  see wiki  "
   puts_c "link or l      ", " ... links"
   puts_c "l [tag]        ", " ... open random link with tag"
   puts_c "l [url] [tag1=optional] [tag2] [tag3] ...      ", " ... add links with tags"

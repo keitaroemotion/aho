@@ -72,18 +72,22 @@ def exe_wiki(args)
         homedir = gethomedir
         files = Dir["#{homedir}/*"]
         delegetes = Array.new
+        puts
         files.each do |file|
           filename = get_file_name_wiki(homedir, file)
           if filename.start_with? word
             delegetes.push file
-            puts filename.green
+            print "looking for... "
+            puts filename.cyan
           end
         end
 
         delegetes.each do |file|
          def do_wiki_file(file, word, homedir)
            filename = file.gsub("#{homedir}/","")
-           if filename.start_with? word
+           if filename == word
+               open_wipath file, filename
+           elsif filename.start_with? word
              print "Do you open "
              print "#{filename}".cyan
              print "? :[Y/n] "
@@ -92,7 +96,7 @@ def exe_wiki(args)
                open_wipath file, filename
              when "n"
              else
-               do_wiki_file file
+               do_wiki_file file, word, homedir
              end
            end
          end
