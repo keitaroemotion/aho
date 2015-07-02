@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+mkdir -p /usr/local/etc/aho
+mkdir -p /usr/local/etc/aho/wiki
+mkdir -p /usr/local/etc/aho/lib
+cp ./aho /usr/local/bin/aho
+cp ./lib/*.rb /usr/local/etc/aho/lib/
+

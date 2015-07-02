@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+
+require '/usr/local/etc/appu/lib/helper'
+require '/usr/local/etc/appu/lib/link'
+require '/usr/local/etc/appu/lib/open'
+require '/usr/local/etc/appu/lib/todo'
+require '/usr/local/etc/appu/lib/search'
+require '/usr/local/etc/appu/lib/web'
+require '/usr/local/etc/appu/lib/process'
+require '/usr/local/etc/appu/lib/filex'
+require '/usr/local/etc/appu/lib/alias'
+require '/usr/local/etc/appu/lib/memo'
+require '/usr/local/etc/appu/lib/ca'
+require '/usr/local/etc/appu/lib/book'
+require '/usr/local/etc/appu/lib/err'
+require '/usr/local/etc/appu/lib/wiki'
+require 'fileutils'
+require 'colorize'
+
+#todo
+  # memo (tag-based)
+
+operation = ARGV[0]
+current_location = ""
+
+def operate(operation)
+  begin
+    if operation != nil
+      args = operation.split(' ')
+      operation = args[0]
+      if operation != nil
+        operation = operation.strip
+      end
+    end
+    case operation
+    when "a"
+      exe_alias
+    when "qq"
+      abort
+    when "q"
+      abort
+   # when "memo", "m"
+   #   exe_memo
+    when "help", "h", "?"
+      exe_help
+    when "blist", "bl"
+      showkeys
+    when "book", "b"  # bookmark
+      exe_book
+    when "cal"
+      disp
+      puts
+    when "task"
+      task
+    when "todo", "t"
+      exe_todo
+    when "link", "l"
+      #このうしろタグがあればかってに空く仕様だと魅力
+      #if additional arg tag = listtag
+      if args.size > 2
+        addlink args[1], args[2..args.size-1]
+      else
+        show_linkmenu args[1]
+      end
+    when "tl"
+      list_tags
+    when "web", "w" #webfind
+      exe_web
+    when "clean" #clean trash
+      system("rm -rf ~/.Trash/*")
+    when "renamefiles"
+      exe_rename
+    when "memo"
+      exe_memo
+    when "wiki", "wi" # dictionary refer, insert, modify
+      exe_wiki args
+    when "del"
+      del
+    when "kill", "o"
+      exe_kill
+    when "reload", "rel"#only for developer
+      system "sh #{Dir.pwd}/setup"
+      Kernel.exec "appu" # reload the program
+    when "//"
+      exe_search
+    else
+      accusative = operation
+      if (accusative != nil) && (accusative != "")
+        if accusative == "al"
+          puts
+          show_all_alias
+          puts
+        else
+          #1st, look alias(auto)
+          accusative = accusative.chomp
+          if file_to_map($target_alias).keys.include? accusative
+            system file_to_map($target_alias)[accusative]
+          elsif file_to_map($target_bookmark).values.include? accusative
+            openbook accusative
+          elsif file_to_map($target_file).values.include? accusative
+            open_rand accusative
+          elsif
+            exe_open_kid accusative.chomp
+          end
+        end
+      end
+      home
+    end
+  rescue Exception => e
+    if e.message == "exit"
+      abort
+    else
+      handle_exception e
+    end
+  end
+  bort
+end
+
+operate operation
+

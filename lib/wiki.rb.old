@@ -1,0 +1,273 @@
+def exe_wiki()
+  print "[a:]add [d:]delete [e:]edit [q:quit] [Else:]search: "
+  oper = $stdin.gets.chomp
+  if oper == "q"
+    home
+  else
+    wiki oper
+  end
+end
+
+def add_wiki(term, comment, tags)
+  oldfile = ""
+  Dir["#{$target_wikidir}/*"].each do |file|
+    old_terms = get_fe(file)
+    if old_terms[0] == term
+       oldfile = file
+       (1..old_terms.size-1).each do |x|
+         tags.push old_terms[x]
+       end
+    end
+  end
+
+  tags.each do |tag|
+    if term.include?("##{tag}") == false
+      term += "##{tag}"
+    end
+  end
+  file = "#{$target_wikidir}/#{term}"
+
+  if oldfile != ""
+    system("mv #{oldfile} #{file}")
+  end
+
+  def trim_blank_line(file)
+    newarr = Array.new
+    file_to_array(file).each do |line|
+      if blank(line)
+      else
+        newarr.push line
+      end
+    end
+    f = File.open(file, "w")
+    f.puts newarr
+    f.close
+  end
+
+  f = File.open("#{file}", "a")
+  f.puts comment
+  f.close
+
+  print "saved!! ".green
+  fs = file.split('#')
+  print fs[0].red
+  print " tags: "
+  (1..fs.size-1).each do |tagi|
+    print " ["
+    print fs[tagi].cyan
+    print "]"
+  end
+  trim_blank_line file
+  puts
+end
+
+#def see_wiki(term)
+
+def includetag?(term, tag)
+  if tag.start_with? "#"
+    tag = tag.gsub("#","")
+    if term.split("#").include? tag
+      return true
+    end
+  end
+  return false
+end
+
+def get_word_contents(file, tags, word)
+  print "############################## ".blue
+  print "#{word}".green
+  puts " ###############################".blue
+  file_to_array(file).each do |line|
+    print "#{line.chomp}\r"
+    res = $stdin.gets
+    if res.chomp.strip == "q"
+      break
+    end
+  end
+  puts
+  printf "tag: ".cyan
+  tags.each do |tag|
+    print "["
+    print tag.green
+    print "]"
+  end
+  puts
+end
+
+$word_cache = Array.new
+
+def get_fe(file)
+  return file.gsub("#{$target_wikidir}/","").split('#')
+end
+
+def get_tags(file_elems)
+  tags = Array.new
+  (1..file_elems.size-1).each do |i|
+    tags.push file_elems[i]
+  end
+  return tags
+end
+
+def exe_wiki_file(file, word)
+
+  file_elems = get_fe file
+  tags = get_tags file_elems
+  file_name = file_elems[0]
+
+  # search by file name
+
+  if file_name == word
+    get_word_contents file, tags, word
+  elsif file_name.start_with? word
+    $word_cache.push (file)
+  elsif includetag? file , word
+    print "["
+    print file.split('#')[0].gsub("#{$target_wikidir}/", "").cyan
+    print "]\n"
+  else
+  end
+end
+
+def collect_comments(lines, word, tags)
+  print "# ".green
+  res = $stdin.gets.chomp
+  if res.strip == ":wq"
+    return lines
+  elsif res.strip == ":w"
+    add_wiki word, lines, tags
+    collect_comments Array.new, word, Array.new
+  else
+    lines.push res
+    collect_comments lines, word, Array.new
+  end
+end
+
+def wiki(oper)
+  opers = oper.split(" ")
+  oper = oper[0]
+  case oper
+  when "s"
+    print "word: "
+    word = $stdin.gets.chomp
+
+    $word_cache = Array.new
+
+    Dir["#{$target_wikidir}/*"].each do |file|
+      exe_wiki_file file , word
+    end
+
+
+    if $word_cache.size > 1
+      $word_cache.each do |e|
+        def wiki_tagsplit(term)
+          return term.gsub("#{$target_wikidir}/", "").split('#')
+        end
+        puts wiki_tagsplit(e)[0].green
+      end
+      puts "which one to choose [q:quit] ?: "
+      word = $stdin.gets.chomp
+      case word
+      when "q"
+        home
+      else
+        $word_cache.each do |file|
+          kw = wiki_tagsplit(file)[0]
+          if kw.start_with? word
+            exe_wiki_file file , kw
+          end
+        end
+        $word_cache = Array.new
+      end
+    elsif $word_cache.size == 1
+      file_elems = get_fe($word_cache[0])
+      tags = get_tags(file_elems)
+      get_word_contents $word_cache[0], tags, word
+    end
+  when "a"
+    def add_wiki_interactive()
+      print "word: "
+      word = $stdin.gets.chomp
+      if blank(word)
+        print "word blank!!\n".red
+        add_wiki_interactive
+      elsif word == "q"
+        home
+      else
+        if word == "memo"
+          t = Time.new
+          word = "#{t.year}-#{t.month}-#{t.day}"
+        end
+        print "tags[blank for none] :"
+        tags = Array.new
+        tag_input = $stdin.gets.chomp
+        if !blank(tag_input)
+          tag_input.split(' ').each do |tag|
+            tags.push tag
+          end
+        end
+        puts "comment[q:quit] : "
+        comment = collect_comments(Array.new, word, tags)
+        add_wiki word, comment, tags
+      end
+    end
+    add_wiki_interactive()
+  when "d"
+  when "e"
+    print "word to edit: "
+    word = $stdin.gets.chomp
+    Dir["#{$target_wikidir}/*"].each do |file|
+      word_auth = get_fe(file)[0]
+      if word_auth.start_with? word
+        print "You wanna open "
+        print word_auth.cyan
+        print " ?: [Y/n]"
+        if $stdin.gets.chomp.downcase == "y"
+          lines = file_to_array(file)
+          def editline(line)
+            print line.chomp.red
+            print "\n| ".green
+            line_mod = $stdin.gets.chomp
+            if ((line_mod == nil) || (line_mod.strip == ""))
+              return line.chomp
+            else
+              return line_mod.chomp
+            end
+          end
+          linesmod = Array.new
+          lines.each do |line|
+            newline = editline(line)
+            if newline.chomp == "d"
+            elsif newline.chomp == "s"
+              linesmod.push ""
+            else
+              linesmod.push newline
+            end
+          end
+
+          puts "--------------- EDIT RESULT ---------------"
+          (0 .. lines.size-1).each do |i|
+            print "[#{i}] ".red
+            puts lines[i].chomp.red
+
+            if ((lines[i] != nil) && (linesmod[i] != nil)&& (lines[i].strip != linesmod[i].strip))
+              print "[#{i}] ".green
+              puts linesmod[i].chomp.green
+            end
+          end
+          print "Overwrite?: [Y/n]"
+          if $stdin.gets.chomp == "y"
+            f = File.open(file, "w")
+            linesmod.each do |line|
+              f.puts line
+            end
+            f.close
+          end
+
+          break
+        end
+      end
+    end
+
+  else
+  end
+end
