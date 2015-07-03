@@ -52,6 +52,9 @@ def operate(operation)
     when "cal"
       disp
       puts
+    when "test"
+      print "input: "
+      graph_engine($stdin.gets.chomp)
     when "task"
       task
     when "todo", "t"
