@@ -14,6 +14,7 @@ require '/usr/local/etc/aho/lib/ca'
 require '/usr/local/etc/aho/lib/book'
 require '/usr/local/etc/aho/lib/err'
 require '/usr/local/etc/aho/lib/wiki'
+require '/usr/local/etc/aho/lib/mpm'
 require 'fileutils'
 require 'colorize'
 
@@ -43,6 +44,8 @@ def operate(operation)
       abort
    # when "memo", "m"
    #   exe_memo
+    when "mpm" #man power management
+      exe_mpm args
     when "help", "h", "?"
       exe_help
     when "blist", "bl"
@@ -82,7 +85,7 @@ def operate(operation)
     when "del"
       del
     when "kill", "o"
-      exe_kill
+      exe_kill args
     when "reload", "rel"#only for developer
       system "sh #{Dir.pwd}/setup"
       Kernel.exec "aho" # reload the program

@@ -1,5 +1,6 @@
 require '/usr/local/etc/aho/lib/helper'
 
+
 def kill(term)
   list = guess term
   if list.size == 1
@@ -21,8 +22,13 @@ def kill(term)
 end
 
 
-def exe_kill()
-  get_args("Enter the app name to kill:").each do |proc|
+def exe_kill(args=nil)
+  if args != nil
+    args = args[1..args.size-1]
+  else
+    args = get_args "Enter the app name to kill:"
+  end
+  args.each do |proc|
     kill proc
   end
 end

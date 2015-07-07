@@ -15,7 +15,6 @@ def complement_year(year)
   end
 end
 
-
 COMMON_YEAR_DAYS_IN_MONTH = [nil, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 def days_in_month(month, year = Time.now.year)
@@ -91,36 +90,6 @@ def convertIntIntoString(int)
   end
 end
 
-def add_right_pane(arr, int)
-  arr += Controller.getCustoms(convertIntIntoString($d.wday))
-  extra = ""
-  if arr.size > int
-    extra = "- "+arr[int].chomp
-  end
-  remnant = -1
-  if extra.include? $timesepatationkey
-    time = extra.strip.split($timesepatationkey)[1].split(':')
-    hour = time[0].to_i
-    min = time[1].to_i
-    remnant =  (hour*60+min) - ($d.hour*60+$d.minute)
-    extra = extra.gsub! $timesepatationkey , ""
-  end
-
-  #printf "| #{extra} ".white
-  if remnant > 0
-    hour = ""
-    remnant_devided = remnant/60
-    if remnant_devided > 0
-      hour = "%s hrs " % [remnant_devided]
-    end
-    minutes = "%s minutes" % [remnant%60]
-
-    printf "#{hour}#{minutes} left ".green
-  end
-  puts
-end
-
-
 def print_wod()
   ["Su","Mo","Tu","We","Th","Fr","Sa"].each { |dow|
     printf dow+" "
@@ -129,10 +98,6 @@ def print_wod()
 end
 
 $todos =  Controller.get_text($haec_annus.to_i, $haec_mensis.to_i, $d.day)
-
-
-
-
 
 $count = 0
 $striplen = 0
@@ -154,11 +119,11 @@ def disp()
   }
   (1..days_in_month($haec_mensis.to_i, $haec_annus.to_i)).each { |dies|
     diesprop = DateTime.new($haec_annus.to_i,$haec_mensis.to_i,dies)
+
     if diesprop.wday == 0
-      add_right_pane $todos, $count
-      $count += 1
-      $striplen = 0
+      puts
     end
+
     vdies = dies.to_s
     if (dies < 10)
       vdies = " "+vdies
@@ -181,7 +146,5 @@ def disp()
     end
   }
 
-  #entail $striplen, $maxlen
-  #add_right_pane $todos, $count
 end
 

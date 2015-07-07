@@ -26,65 +26,113 @@ end
 
 def get_hor_edge(maxsize)
   hor_edge = "+"
-  (0 .. maxsize).each do |e|
+  (1 .. maxsize).each do |e|
     hor_edge += "-"
   end
   hor_edge +=  "+"
 end
 
-def num_alloc_memo(total)
-  bl = ""
-  num = 0
-  if total%2 == 0
-    num = total/2
+def get_half_pane(totalsize, text)
+
+  #      T O T A L  S I Z E
+  #  +-------------------------+
+  #  |   |te |xt |si |ze |diff |
+  #  +-------------------------+
+  #  half                 half
+  #  pane                 pane
+  totalsize = totalsize.to_i
+  textsize = text.size
+  diff = totalsize - textsize.to_i
+  if diff % 2 == 0
+    return diff/2
   else
-    num =  (total-1)/2
+    return ((diff+1)/2)-1
   end
-  (0..num-1).each do |i|
-    bl += " "
+end
+
+$GRAPH_COMMAND = "ktt"
+
+def make_box(cont)
+  maxsize = 0 # equals the horizontal size - 2?
+  cont.each do |text|
+    if (maxsize < text.size)
+      maxsize = text.size
+    end
   end
-  return bl
+  strips = Array.new
+  strips.push maxsize.to_s
+  hor_edge = get_hor_edge maxsize
+  # +-- .... --+
+  strips.push hor_edge
+
+  cont.each do |value|
+    half_pane = get_half_pane(maxsize,value)
+    value_mod = "|"
+    (1 .. half_pane).each do |blank|
+      value_mod += " "
+    end
+    value_mod += value
+    (1 .. (maxsize - half_pane - value.size)).each do |blank|
+      value_mod += " "
+    end
+    value = value_mod
+    strips.push value+"|"
+  end
+  # +-- .... --+
+  strips.push hor_edge
+end
+
+def write_interval(inter_x, index, middle_y)
+  mark = " "
+  if index == middle_y
+    mark = "-"
+  end
+  (1..inter_x).each do |d|
+    print mark.yellow
+  end
 end
 
 def graph_engine(line)
   # katati box dx dy w h v1 v2 v3
   lines = line.strip.split(' ')
-  if lines[0] == "katati"
+  if lines.size == 0
+    lines = ["ktt","box","hoi","hen", "ssss"]
+  end
+  if lines[0] == "ktt"
     args = lines[1..line.size-1]
     func = args[0]
     case func
     when "box"
-      cont = args[1..args.size-1]
-      maxsize = 0 # equals the horizontal size - 2?
-      cont.each do |text|
-        if (maxsize < text.size)
-          maxsize = text.size
+      box = make_box args[1..args.size-1]
+      box2 = make_box ["nyan", "nnnya", "hoahoa","moo"]
+
+      inter_x = 5
+      dx      = inter_x + box[0].to_i
+      middle_y = (box.size-1)/2
+
+
+      (1 .. box.size-1).each do |index|
+         print box[index]
+         write_interval inter_x, index, middle_y
+         print box2[index]
+         puts
+      end
+
+      if box2.size > box.size
+        (box.size .. box2.size-1).each do |x|
+          (1 .. box[0].to_i+2).each do |i|
+            print "#"
+          end
+
+          write_interval inter_x, 0, 0
+          print box2[x].red
+          puts
         end
       end
 
-      strips = Array.new
-      hor_edge = get_hor_edge maxsize
 
-      strips.push hor_edge
-
-      cont.each do |value|
-        al_num = num_alloc_memo(maxsize)
-        value = "|" + al_num + value
-        total = maxsize-value.size+1
-
-        #(0..maxsize-value.size+1).each do |i|
-        #  value += " "
-        #end
-        (0..(total-al_num.size)).each do |x|
-          print " "
-        end
-        value += "|"
-        strips.push value
-      end
-      strips.push hor_edge
-
-      puts strips
-
+      #puts box
+      #puts box2
     else
     end
   else
