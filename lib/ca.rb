@@ -7,7 +7,6 @@ option = ARGV[0]
 $d = DateTime.now
 $haec_annus = $d.year
 $haec_mensis = $d.month
-#$haec_uno_dies = DateTime.new($haec_annus,$haec_mensis,1).wday
 
 def complement_year(year)
   if year.to_s == 2
@@ -112,6 +111,10 @@ def entail(striplen, maxlen)
 end
 
 def disp()
+  $d = DateTime.now
+  $haec_annus = $d.year
+  $haec_mensis = $d.month
+
   showTempus $d
   print_wod
   (1.. $haec_uno_dies).each {

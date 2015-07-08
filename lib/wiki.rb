@@ -4,7 +4,22 @@ def open_wipath(path, word)
   puts
   puts word.upcase.green
   puts
-  Kernel.exec("cat #{path}; echo;  aho")
+  max_size = 6
+  i = 0
+  file_to_array(path).each do |line|
+    puts line
+    if i == max_size
+      print "Next: ".red
+      case $stdin.gets.chomp
+      when "q"
+        break
+      else
+      end
+      i = 0
+    end
+    i += 1
+  end
+  #Kernel.exec("cat #{path}; echo;  aho")
 end
 
 def gethomedir()
