@@ -15,6 +15,8 @@ require '/usr/local/etc/aho/lib/book'
 require '/usr/local/etc/aho/lib/err'
 require '/usr/local/etc/aho/lib/wiki'
 require '/usr/local/etc/aho/lib/mpm'
+require '/usr/local/etc/aho/lib/anime'
+
 require 'fileutils'
 require 'colorize'
 
@@ -55,6 +57,14 @@ def operate(operation)
     when "cal"
       disp
       puts
+    when "neon"
+      print "which file?"
+      path = $stdin.gets.chomp
+      path = "/Users/sugano-k/Documents/aaa.rst"
+      display_roll "HE IS A SAILOR> yES"
+      #file_to_array(path).each do |line|
+      #  display_r line.chomp
+      #end
     when "test"
       print "input: "
       graph_engine($stdin.gets.chomp)

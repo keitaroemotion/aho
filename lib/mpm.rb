@@ -1,9 +1,10 @@
+# 工数管理システム
 
-$target_mpm = "/usr/local/etc/aho/mpm"
+$target_mpm      = "/usr/local/etc/aho/mpm"
 $target_mpm_cont = "/usr/local/etc/aho/mpm_content"
 $target_mpm_time = "/usr/local/etc/aho/mpm_time"
-$scheme_tag = "{scheme}"
-$scheme_jtag = "{scheme_j}"
+$scheme_tag      = "{scheme}"
+$scheme_jtag     = "{scheme_j}"
 
 def add_col()
   print "set column name: "
@@ -261,7 +262,6 @@ def exe_mpm(args)
       f.puts a
     end
     f.close
-
   else
   end
 

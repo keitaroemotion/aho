@@ -7,9 +7,13 @@ def open_wipath(path, word)
   max_size = 6
   i = 0
   file_to_array(path).each do |line|
-    puts line
+    if line.strip.start_with? "\""
+      puts line.yellow
+    else
+      puts line
+    end
     if i == max_size
-      print "Next: ".red
+      print "[Next]: ".red
       case $stdin.gets.chomp
       when "q"
         break
@@ -19,7 +23,6 @@ def open_wipath(path, word)
     end
     i += 1
   end
-  #Kernel.exec("cat #{path}; echo;  aho")
 end
 
 def gethomedir()
@@ -33,11 +36,20 @@ end
 
 def exe_wiki(args)
   op = args[1]
+
   case op
   when "la"
     homedir = gethomedir
+    query = ""
+    if args[2] != nil
+      query = args[2]
+    end
+
     Dir["#{homedir}/*"].sort_by!{ |m| m.downcase }.each do |file|
-      puts get_file_name_wiki(homedir, file).green
+      filename = get_file_name_wiki(homedir, file)
+      if filename.start_with? query
+        puts filename.green
+      end
     end
   when "e"
     word = ""
@@ -77,7 +89,17 @@ def exe_wiki(args)
   else #refer
     word = op
     if word == nil
-      puts "you need argument!"
+      (0..4).each do |i|
+        print "You need argument!\r".red
+        sleep(0.3)
+        print "                      \r"
+        sleep(0.3)
+      end
+      puts
+      puts "[word]    ... Show Word"
+      puts "la    ... List All"
+      puts "e [word]    ... Edit Wiki"
+      puts
       home
     else
       wiki_path = "#{$wiki_dir}/#{word}"

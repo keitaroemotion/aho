@@ -140,69 +140,67 @@ def graph_engine(line)
   end
 end
 
+def show_viz(file, ans)
+  lines = file_to_array(file)
+  i = 0
+  lines.each do |line|
+    if line.strip != ""
+      prog =  "#{(i.to_f/lines.size.to_f*100).to_i}% ".to_s
+      print "[".blue
+      (1..(4-prog.size)).each do |r|
+        prog += " "
+      end
+      print prog.cyan
+      print "] ".blue
+      line = line.chomp
+      if line.strip.start_with? "*"
+        print line.cyan
+      elsif line.strip.start_with? "-"
+        print line.yellow
+      elsif line.start_with? "###"
+        print line.green
+      else
+        print line
+      end
+
+      puts
+      interr = quit?
+      case interr
+      when 0
+        $op = $QUIT
+        break
+      when 1
+        $speed -= 0.4
+        if $speed < 0
+         $speed = 2
+        end
+        puts "Velocity: #{'%.2f' % $speed}".green
+      when 2
+        $speed += 0.2
+        puts "Velocity: #{'%.2f' % $speed}".green
+      end
+
+      if ans == "y"
+        sleep($speed)
+      end
+    end
+  i += 1
+  end
+end
 
 def scroll_memo(year, month, day, ans)
   file = get_file_memo(year, month, day)
+  bad = false
   if File.exist?(file) == false
     puts "file does not exist: #{file}"
+    bad = true
   end
 
-
-
-  def show_viz(file, ans)
-
-    lines = file_to_array(file)
-    i = 0
-    lines.each do |line|
-      if line.strip != ""
-        prog =  "#{(i.to_f/lines.size.to_f*100).to_i}% ".to_s
-        print "[".blue
-        (1..(4-prog.size)).each do |r|
-          prog += " "
-        end
-        print prog.cyan
-        print "] ".blue
-        line = line.chomp
-        if line.strip.start_with? "*"
-          print line.cyan
-        elsif line.strip.start_with? "-"
-          print line.yellow
-        elsif line.start_with? "###"
-          print line.green
-        else
-          print line
-        end
-
-        puts
-        interr = quit?
-        case interr
-        when 0
-          $op = $QUIT
-          break
-        when 1
-          $speed -= 0.4
-          if $speed < 0
-           $speed = 2
-          end
-          puts "Velocity: #{'%.2f' % $speed}".green
-        when 2
-          $speed += 0.2
-          puts "Velocity: #{'%.2f' % $speed}".green
-        end
-
-        if ans == "y"
-          sleep($speed)
-        end
-      end
-    i += 1
-    end
+  if bad == false
+    show_viz file, ans
   end
-  show_viz file, ans
+  return bad
 end
-
-
-
-
 
 def exe_memo(args)
   args = args[1..args.size]
@@ -225,9 +223,42 @@ def exe_memo(args)
 
     print "Year[#{t.year}]:"
     year = get_memo_res(t.year)
+    home = %x(echo $HOME).chomp
+    memodir = "#{$MEMO_DIR.gsub('~',home).chomp}"
+    puts memodir
+
+    data = Array.new
+
+    Dir["#{memodir}/*".chomp].each do |file|
+      filename = "#{file.gsub(memodir.chomp, '').gsub('.memo','').gsub('/','')} "
+      file_tokens = filename.split('-')
+      monthkey = file_tokens[1]
+      day = file_tokens[2]
+      yearkey = file_tokens[0]
+
+      if yearkey.strip.to_i == year
+        data.push  [monthkey, day]
+      end
+
+    end
+
+    hash = Hash.new
+    data.each do |date|
+      hash[date[0]] = date[1]
+    end
+
+    print "#{year} ".red
+    print "| "
+    hash.keys.each do |x|
+      print "#{x.green} "
+    end
+    puts
 
     print "Month[#{t.month}]:"
     month = get_memo_res(t.month)
+
+    puts hash[month.to_s.chomp.strip]
+
     print "Day[#{t.day}]:"
     day = get_memo_res(t.day)
     print  "scroll? [Y/n]: "
@@ -236,6 +267,7 @@ def exe_memo(args)
 
 
     def memo_disp_main(year, month, day, ans)
+      bad = false
       if (day == "all") || (day == "a")
         (1..31).each do |d|
           if $op == $QUIT
@@ -250,11 +282,13 @@ def exe_memo(args)
           end
         end
       else
-        scroll_memo year, month, day, ans
+        bad = scroll_memo year, month, day, ans
       end
       #recursive
       if $op != $QUIT
-        memo_disp_main(year, month, day, ans)
+        if bad == false
+          memo_disp_main(year, month, day, ans)
+        end
       end
     end
     memo_disp_main(year, month, day, ans)
