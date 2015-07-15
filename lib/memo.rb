@@ -174,9 +174,9 @@ def show_viz(file, ans)
         print line.green
       elsif kw != nil
         lsp = line.split(kw)
-        print lsp[0]+" "
-        print kw.upcase.red
-        print " "+lsp[1]
+        print "#{lsp[0]} "
+        print kw.upcase.magenta.blink
+        print " #{lsp[1]}"
       else
         print line
       end
