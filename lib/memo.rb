@@ -140,6 +140,18 @@ def graph_engine(line)
   end
 end
 
+require '/usr/local/etc/aho/lib/wiki'
+$wiki = list_wiki
+
+def line_include_wiki(line)
+  $wiki.each do |w|
+     if line.downcase.include? " #{w} "
+       return w
+     end
+  end
+  return nil
+end
+
 def show_viz(file, ans)
   lines = file_to_array(file)
   i = 0
@@ -153,12 +165,18 @@ def show_viz(file, ans)
       print prog.cyan
       print "] ".blue
       line = line.chomp
+      kw = line_include_wiki(line)
       if line.strip.start_with? "*"
         print line.cyan
       elsif line.strip.start_with? "-"
         print line.yellow
       elsif line.start_with? "###"
         print line.green
+      elsif kw != nil
+        lsp = line.split(kw)
+        print lsp[0]+" "
+        print kw.upcase.red
+        print " "+lsp[1]
       else
         print line
       end

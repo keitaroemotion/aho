@@ -34,22 +34,30 @@ def get_file_name_wiki(homedir, file)
   return file.gsub("#{homedir}/","")
 end
 
+def list_wiki(query="")
+  homedir = gethomedir
+  wikis = Array.new
+  Dir["#{homedir}/*"].sort_by!{ |m| m.downcase }.each do |file|
+    filename = get_file_name_wiki(homedir, file)
+    if filename.start_with? query
+      wikis.push filename
+    end
+  end
+  return wikis
+end
+
 def exe_wiki(args)
   op = args[1]
 
   case op
   when "la"
-    homedir = gethomedir
     query = ""
     if args[2] != nil
       query = args[2]
     end
 
-    Dir["#{homedir}/*"].sort_by!{ |m| m.downcase }.each do |file|
-      filename = get_file_name_wiki(homedir, file)
-      if filename.start_with? query
-        puts filename.green
-      end
+    list_wiki(query).each do |w|
+      puts w.green
     end
   when "e"
     word = ""

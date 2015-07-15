@@ -132,7 +132,7 @@ def disp()
       vdies = " "+vdies
     end
     if diesprop.day == $d.day
-      printf (vdies+" ").cyan
+      printf (vdies+" ").cyan.swap
       $striplen += 3
     elsif Controller.hasSchedule $haec_annus, $haec_mensis, dies
       printf (vdies+" ").yellow
