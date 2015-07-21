@@ -117,8 +117,15 @@ def operate(operation)
             openbook accusative
           elsif file_to_map($target_file).values.include? accusative
             open_rand accusative
-          elsif
-            exe_open_kid accusative.chomp
+          else
+            res = exe_open_kid(accusative.chomp)
+            if res == false
+              order = ""
+              args.each do |part|
+                order += part+" "
+              end
+              system  "#{order}"
+            end
           end
         end
       end

@@ -1,6 +1,7 @@
 def exe_open_kid(term)
   list = guess term
   if list.size == 0
+    return false
   elsif list.size == 1
     list[0] = list[0].gsub(" ","\\ ")
     if("/applications/#{term}.app" != list[0].downcase)
@@ -8,13 +9,14 @@ def exe_open_kid(term)
       print list[0].gsub($APP_DIR+"/",'').gsub(".app","").gsub("\\","").cyan
       print " ? [Y/n] : "
       if $stdin.gets.chomp.downcase != "y"
-        bort
+        return true
       end
     end
     system("open #{list[0]}")
   else
     puts list
   end
+  return true
 end
 
 def exe_open()
